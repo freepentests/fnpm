@@ -27,6 +27,10 @@ export default class FlagParser {
 		this.args = [];
 	}
 
+	get(name, type = 'DOUBLE_HYPHEN') {
+		return this.options.filter(obj => obj.name === name && obj.type === type)[0];
+	}
+
 	parse(argv) {
 		argv.forEach((arg) => {
 			const equalSignIndex = arg.indexOf('=');
