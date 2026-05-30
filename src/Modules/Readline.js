@@ -4,6 +4,7 @@ export default class Readline {
 	static question(prompt, options) {
 		return new Promise((resolve, reject) => {
 			if (options && options.masked) process.stdin.setRawMode(true);
+			if (process.stdin.isPaused()) process.stdin.resume();
 			process.stdout.write(prompt);
 
 			let buffer = new Uint8Array();

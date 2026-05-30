@@ -4,8 +4,8 @@ export default class PackageJsonRepoObjectBuilder {
 		this.url;
 	}
 
-	setType(name) {
-		this.type = type;
+	setType(type) {
+		this.type = type; // i don't know why anyone would use any VCS other than git
 		return this;
 	}
 
