@@ -1,6 +1,6 @@
-import PackageJsonBugBuilder from './Builders/PackageJsonBugBuilder.js':
-import PackageJsonPersonBuilder from './Builders/PackageJsonBugBuilder.js':
-import PackageJsonRepoObjectBuilder from './Builders/PackageJsonRepoObjectBuilder.js':
+import PackageJsonBugBuilder from './Builders/PackageJsonBugBuilder.js';
+import PackageJsonPersonBuilder from './Builders/PackageJsonBugBuilder.js';
+import PackageJsonRepoObjectBuilder from './Builders/PackageJsonRepoObjectBuilder.js';
 
 import fs from 'fs';
 
@@ -17,7 +17,7 @@ export default class PackageJson {
 	modifyPackageJson(func) {
 		const packageJsonContents = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 		func(packageJsonContents);
-		fs.writeFileSync('package.json', JSON.stringify(packageJsonContents);
+		fs.writeFileSync('package.json', JSON.stringify(packageJsonContents));
 	}
 
 	setName(name) {
@@ -128,6 +128,22 @@ export default class PackageJson {
 			if (!packageJsonContents.scripts) packageJsonContents.scripts = {};
 
 			packageJsonContents.scripts[name] = script;
+		});
+	}
+
+	addDependency(dep, version) {
+		this.modifyPackageJson((packageJsonContents) => {
+			if (!packageJsonContents.dependencies) packageJsonContents.dependencies = {};
+
+			packageJsonContents.dependencies[dep] = version;
+		});
+	}
+
+	addDevDependency(dep, version) {
+		this.modifyPackageJson((packageJsonContents) => {
+			if (!packageJsonContents.devDependencies) packageJsonContents.devDependencies = {};
+
+			packageJsonContents.devDependencies[dep] = version;
 		});
 	}
 
