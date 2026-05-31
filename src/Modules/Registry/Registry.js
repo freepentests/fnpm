@@ -27,7 +27,14 @@ export default class Registry {
 
 		return await resp.json();
 	}
+
+	async packageInfo(name, version) {
+		const resp = await this.doRequest(`${Endpoints.PackageInfo}/${name}/${version ? version : ''}`);
+
+		return await resp.json();
+	}
 }
 
 // console.log((await new Registry().search('webpack')).objects[0].package.description);
+console.log(await new Registry().packageInfo('webpack', '1.0.0'))
 
