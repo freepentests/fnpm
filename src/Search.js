@@ -5,7 +5,7 @@ export default class SearchCommand {
 	async execute() {
 		const args = new FlagParser().parse(process.argv);
 
-		const query = args.args[2];
+		const query = args.args[3];
 		const results = await new Registry().search(query);
 
 		const formatted = results.objects.map(result => {

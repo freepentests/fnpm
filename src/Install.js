@@ -110,7 +110,7 @@ Version: ${packageVersion}\n`);
 	async execute() {
 		const args = new FlagParser().parse(process.argv);
 
-		const packageName = args.args[2];
+		const packageName = args.args[3];
 		const packageVersion = args.get('version')?.value || args.get('v', 'SINGLE_HYPHEN')?.value || 'latest'; // if no version is explicitly specified, assume the user wants the latest version of the package
 
 		this.#installPackage(packageName, packageVersion);
