@@ -20,7 +20,7 @@ export default class InitCommand {
 		const type = autoConfirm ? 'module' : await Readline.question('type (module): ') || 'module';
 		const confirmation = autoConfirm ? 'yes' : await Readline.question('is all this information correct? (yes): ') || 'yes';
 
-		if (confirmation !== 'yes') return;
+		if (confirmation !== 'yes') return console.log('Exiting.');
 
 		packageJson
 			.setName(name)

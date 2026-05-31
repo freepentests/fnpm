@@ -35,7 +35,7 @@ There are currently no flags for this command.
 - [x] Add init command
 - [x] Add search command
 - [x] Add install command
-- [ ] Add run command
+- [x] Add run command
 - [ ] Add uninstall command
 - [ ] Add a custom configuration command
 - [ ] Add a configurable anti-skid option which deliberately breaks the `install` command to prevent people installing libraries (installing libraries is skidding). If the `npm` or `yarn` libraries are present on a user system, they will temporarily be replaced with the `shutdown` binary, meaning that if a user attempts to circumvent the anti-skid policies by utilizing other libraries, their computer will shut down instead.

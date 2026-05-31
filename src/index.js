@@ -3,6 +3,7 @@
 import FlagParser from './Modules/Utils/FlagParser.js';
 import InitCommand from './Init.js';
 import InstallCommand from './Install.js';
+import RunCommand from './Run.js';
 import SearchCommand from './Search.js';
 
 const main = () => {
@@ -12,6 +13,10 @@ const main = () => {
 	switch (command) {
 		case 'init':
 			new InitCommand().execute();
+			break;
+
+		case 'run':
+			new RunCommand().execute();
 			break;
 
 		case 'install':
