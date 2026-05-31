@@ -3,6 +3,7 @@ import Untar from './Modules/Utils/Untar.js';
 import Readline from './Modules/Utils/Readline.js';
 import Registry from './Modules/Registry/Registry.js';
 import PackageJson from './Modules/Packages/PackageJson.js';
+import Config from './Modules/Config/Config.js';
 
 import path from 'node:path';
 import fs from 'fs';
@@ -108,6 +109,8 @@ Version: ${packageVersion}\n`);
 	}
 
 	async execute() {
+		if (new Config().getConfig().antiskid === 'enabled') return console.error('Security policies are denying you the right to run the install command due to risk of skidding.');
+
 		const args = new FlagParser().parse(process.argv);
 
 		const packageName = args.args[3];

@@ -2,10 +2,10 @@ import path from 'node:path';
 import os from 'os';
 import fs from 'fs';
 
-const FNPMRCPATH = path.join(os.homedir(), '.fnpmrc');
-
 export default class Config {
-	getConfig() {
+	getConfig(user) {
+		const FNPMRCPATH = path.join(user ? `/home/${user}` : os.homedir(), '.fnpmrc');
+		if (!fs.existsSync(FNPMRCPATH)) fs.writeFileSync(FNPMRCPATH, ''); 
 		const fileData = fs.readFileSync(FNPMRCPATH, 'utf-8');
 		const entries = fileData.split('\n').filter(entry => entry);
 		let entriesObject = {};
@@ -18,18 +18,21 @@ export default class Config {
 		return entriesObject;
 	}
 
-	appendConfigEntry(key, value) {
+	appendConfigEntry(key, value, user) {
+		const FNPMRCPATH = path.join(user ? `/home/${user}` : os.homedir(), '.fnpmrc');
 		if (!fs.existsSync(FNPMRCPATH)) fs.writeFileSync(FNPMRCPATH, ''); 
 		fs.appendFileSync(FNPMRCPATH, `${key}=${value}\n`);
 	}
 
-	deleteConfigEntry(keyToDelete) {
+	deleteConfigEntry(keyToDelete, user) {
+		const FNPMRCPATH = path.join(user ? `/home/${user}` : os.homedir(), '.fnpmrc');
+		if (!fs.existsSync(FNPMRCPATH)) fs.writeFileSync(FNPMRCPATH, ''); 
 		const fileData = fs.readFileSync(FNPMRCPATH, 'utf-8');
 
-		const newFileData = fileData.split('\n').filter(entry => entry).filter(entry => {
+		const newFileData = [fileData.split('\n').filter(entry => entry).filter(entry => {
 			const key = entry.split('=')[0];
 			return key !== keyToDelete;
-		}).join('\n');
+		}), ''].join('\n');
 
 		fs.writeFileSync(FNPMRCPATH, newFileData);
 	}

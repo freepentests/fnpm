@@ -10,17 +10,42 @@ A Node.JS package manager with a strong emphasis on anti-skid policies. FNPM is 
 
 - `install` - This command enables developers to install a specified library from the NPM package repository, accelerating developer efficiency and productivity.
 
+- `config` - This command provides a simplified interface for modifying the NPM configuration file, which contains entries that influence the behavior of the FNPM command line utility.
+
+- `antiskid`- This command deliberately prevents the `install` command from functioning to prevent people who don't understand the libraries they're using from skidding.
+
+- `run` - This command enables developers to execute shell scripts specified in the package.json file by referencing the name of the shell script they want to execute.
+
 ### Flags and Usage Instructions for Each Command
 
 ```
-init options:
+init:
 -y, --yes: Utilizing either of these flags will instruct the FNPM command line utility to automatically choose the default configuration options when initializing package.json.
+Usage: `fnpm init <flags>`
 
-install options:
-There are currently no flags for this command.
+antiskid:
+-e, --enable: Utilizing either of these flags with instruct the FNPM command line utility to enable the anti-skid policies.
+-d, --disable: Utilizing either of these flags with instruct the FNPM command line utility to disable the anti-skid policies.
+Usage: `fnpm antiskid <flags> <user-to-enable-antiskid-for>`
 
-search options:
+config:
+--key=<key-name>: Utilizing this flag will instruct the FNPM command line utility to use the given configuration entry key to perform an action on.
+--value=<value>: Utilizing this flag will instruct the FNPM command line utility to set a specific value to a given entry key.
+-a, --add: Utilizing either of these flags will tell the FNPM command line utility that you desire to add an entry to the configuration file.
+-d, --delete: Utilizing either of these flags will tell the FNPM command line utility that you desire to remove an entry from the configuration file.
+Usage: `fnpm config <flags>`
+
+install:
 There are currently no flags for this command.
+Usage: `fnpm install <command-name>`
+
+search:
+There are currently no flags for this command.
+Usage: `fnpm search <search-query>`
+
+run:
+There are currently no flags for this command.
+Usage: `fnpm run <script-name>`
 ```
 
 ## Installation Tutorial
@@ -36,8 +61,8 @@ There are currently no flags for this command.
 - [x] Add `search` command
 - [x] Add `install` command
 - [x] Add `run` command
-- [ ] Add `uninstall` command
 - [x] Add `config` command
-- [ ] Add a configurable anti-skid option which deliberately breaks the `install` command to prevent people installing libraries (installing libraries is skidding). If the `npm` or `yarn` libraries are present on a user system, they will temporarily be replaced with the `shutdown` binary, meaning that if a user attempts to circumvent the anti-skid policies by utilizing other libraries, their computer will shut down instead.
-- [ ] Add a configurable anti-vibecode option that blocks all AI websites on someone's computer in order to train developers not to vibe code.
+- [x] Add `antiskid` command
+- [ ] Add `antivibecode` command (blocks AI websites on a user's computer)
+- [ ] Add `uninstall` command
 

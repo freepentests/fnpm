@@ -6,6 +6,7 @@ import InstallCommand from './Install.js';
 import RunCommand from './Run.js';
 import SearchCommand from './Search.js';
 import ConfigCommand from './Config.js';
+import AntiSkidCommand from './AntiSkid.js';
 
 const main = () => {
 	const args = new FlagParser().parse(process.argv);
@@ -30,6 +31,10 @@ const main = () => {
 
 		case 'search':
 			new SearchCommand().execute();
+			break;
+
+		case 'antiskid':
+			new AntiSkidCommand().execute();
 			break;
 
 		default:
