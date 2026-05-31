@@ -4,11 +4,21 @@ import Readline from './Modules/Utils/Readline.js';
 import Registry from './Modules/Registry/Registry.js';
 import PackageJson from './Modules/Packages/PackageJson.js';
 
+import path from 'node:path';
 import fs from 'fs';
+import crypto from 'crypto';
+
+class CustomError extends Error {
+	constructor(message, name) {
+		super(message);
+		this.name = name;
+	}
+}
 
 export default class InstallCommand {
 	#getVersionNumberFromSemverString(semverString) {
-		const match = semverString.match(/\d+\.\d+\.\d+/g)
+		const match = semverString.match(/\d+\.\d+\.\d+/g);
+		if (!match && parseInt(semverString)) return `${parseInt(semverString)}.0.0`;
 		return match ? match[0] : null;
 	}
 
@@ -36,6 +46,7 @@ Version: ${packageVersion}\n`);
 			const semverString = currentPackageDependencies[dependencyName];
 			const parsedSemverString = this.#getVersionNumberFromSemverString(semverString); // wouldn't really consider it "parsed" but yk what i mean
 			trackedDependencies[dependencyName] = parsedSemverString;
+			if (!parsedSemverString) trackedDependencies[dependencyName] = 'latest';
 
 			trackedDependencies = await this.#fetchDependentList(dependencyName, parsedSemverString, trackedDependencies);
 		};
@@ -51,13 +62,20 @@ Version: ${packageVersion}\n`);
 	}
 
 	async #installIndividualDependency(dependencyName, dependencyVersion) {
-		const packageInfo = await new Registry().packageInfo(dependencyName, dependencyVersion);
-		console.log(dependencyName, dependencyVersion);
+		const packageInfo = await new Registry().packageInfo(dependencyName, dependencyVersion || 'latest');
 		const tarballUrl = packageInfo.dist.tarball;
 
 		const tarball = await this.#fetchTarball(tarballUrl);
+		const calculatedShaSum = crypto.createHash('sha1').update(new Uint8Array(tarball)).digest('hex');
+		if (calculatedShaSum !== packageInfo.dist.shasum) {
+			throw new CustomError('Calculated SHA-1 checksum does not match that which is specified in registry API response. It is possible that the tarball may have been tampered with.', 'ShaSumMismatchError');
+		}
+		
 		new Untar().extract(tarball);
-		fs.renameSync('package', `./node_modules/${dependencyName}`); // package will be the name of the extracted package
+
+		const nodeModulesPath = `./node_modules/${dependencyName}`;
+		if (!fs.existsSync(path.dirname(nodeModulesPath))) fs.mkdirSync(path.dirname(nodeModulesPath), { recursive: true });
+		if (fs.existsSync('package')) fs.renameSync('package', `./node_modules/${dependencyName}`); // "package" is the name of the extracted tarball
 	}
 
 	async #installDependencies(dependencyVersions) {
@@ -69,11 +87,12 @@ Version: ${packageVersion}\n`);
 
 		for (const dependencyName of Object.keys(dependencyVersions)) {
 			const dependencyVersion = dependencyVersions[dependencyName];
-			console.log(dependencyName);
-			console.log(dependencyVersion);
-			console.log(dependencyVersions);
 			await this.#installIndividualDependency(dependencyName, dependencyVersion);
 		}
+	}
+
+	async #getLatestPackageVersion(packageName) {
+		return (await new Registry().packageInfo(packageName, 'latest')).version;
 	}
 
 	async #installPackage(packageName, packageVersion) {
@@ -85,7 +104,7 @@ Version: ${packageVersion}\n`);
 		console.log('Successfully fetched dependents; proceeding to installation.');
 		await this.#installDependencies(dependencies);
 
-		new PackageJson().addDependency(packageName, packageVersion);
+		new PackageJson().addDependency(packageName, packageVersion === 'latest' ? await this.#getLatestPackageVersion(packageName) : packageVersion);
 	}
 
 	async execute() {
