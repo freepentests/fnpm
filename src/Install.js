@@ -2,29 +2,60 @@ import FlagParser from './Modules/Utils/FlagParser.js';
 import Readline from './Modules/Utils/Readline.js';
 import Registry from './Modules/Registry/Registry.js';
 
-export default class SearchCommand {
-	async #getLatestPackageVersion(name) {
-		const { versions } = await new Registry().packageInfo(name);
-		const latest = Object.keys(versions).slice(-1)[0];
+export default class InstallCommand {
+	#getVersionNumberFromSemverString(semverString) {
+		const match = semverString.match(/\d+\.\d+\.\d+/g)
+		return match ? match[0] : null;
+	}
 
-		return latest;
+	async #askForConfirmation(packageInfo, packageVersion) {
+		console.log(`Name: ${packageInfo.name}\n
+Description: ${packageInfo.description}\n
+Version: ${packageVersion}\n`);
+
+		const confirmation = await Readline.question('Are you sure you want to install this package? (yes): ') || 'yes';
+
+		if (confirmation !== 'yes') {
+			console.log('Received an input other than yes; discarding operation.');
+			process.exit(0);
+		}
+	}
+
+	async #fetchDependentList(packageName, packageVersion, trackedDependencies = {[packageName]: packageVersion}) {
+		// recursively traverses the tree of dependents to find out which packages need to be installed
+		const packageInfo = await new Registry().packageInfo(packageName, packageVersion);
+		const currentPackageDependencies = packageInfo.dependencies ?? {};
+
+		for (const dependencyName of Object.keys(currentPackageDependencies)) {
+			if (trackedDependencies[dependencyName]) continue;
+
+			const semverString = currentPackageDependencies[dependencyName];
+			const parsedSemverString = this.#getVersionNumberFromSemverString(semverString); // wouldn't really consider it "parsed" but yk what i mean
+			trackedDependencies[dependencyName] = parsedSemverString;
+
+			trackedDependencies = await this.#fetchDependentList(dependencyName, parsedSemverString, trackedDependencies);
+		};
+
+		return trackedDependencies;
+	}
+
+	async #installPackage(packageName, packageVersion) {
+		const packageInfo = await new Registry().packageInfo(packageName, packageVersion);
+
+		await this.#askForConfirmation(packageInfo, packageVersion);
+		console.log('Fetching Dependency List...');
+		const dependencies = await this.#fetchDependentList(packageName, packageVersion);
 	}
 
 	async execute() {
 		const args = new FlagParser().parse(process.argv);
 
 		const packageName = args.args[2];
-		const packageVersion = args.get('version')?.value || args.get('v', 'SINGLE_HYPHEN')?.value || await this.#getLatestPackageVersion(packageName); // if no version is explicitly specified, assume the user wants the latest version of the package
+		const packageVersion = args.get('version')?.value || args.get('v', 'SINGLE_HYPHEN')?.value || 'latest'; // if no version is explicitly specified, assume the user wants the latest version of the package
 
-		const packageInfo = await new Registry().packageInfo(packageName, packageVersion);
-
-		console.log(`Name: ${packageInfo.name}\n
-Description: ${packageInfo.description}\n
-Version: ${packageVersion}\n`);
-
-		await Readline.question('Are you sure you want to install this package? (yes): ');
+		this.#installPackage(packageName, packageVersion);
 	}
 }
 
-new SearchCommand().execute();
+new InstallCommand().execute();
 
