@@ -1,6 +1,6 @@
-import PackageJsonBugBuilder from './Builders/PackageJsonBugBuilder.js';
-import PackageJsonPersonBuilder from './Builders/PackageJsonPersonBuilder.js';
-import PackageJsonRepoObjectBuilder from './Builders/PackageJsonRepoObjectBuilder.js';
+import PackageJsonBugBuilder from '../Builders/PackageJsonBugBuilder.js';
+import PackageJsonPersonBuilder from '../Builders/PackageJsonPersonBuilder.js';
+import PackageJsonRepoObjectBuilder from '../Builders/PackageJsonRepoObjectBuilder.js';
 
 import fs from 'fs';
 

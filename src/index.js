@@ -1,4 +1,4 @@
-import FlagParser from './Modules/FlagParser.js';
+import FlagParser from './Modules/Utils/FlagParser.js';
 import InitCommand from './Init.js';
 
 const args = new FlagParser().parse(process.argv);

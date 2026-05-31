@@ -1,6 +1,6 @@
-import FlagParser from './Modules/FlagParser.js';
-import Readline from './Modules/Readline.js';
-import PackageJson from './Modules/PackageJson.js';
+import FlagParser from './Modules/Utils/FlagParser.js';
+import Readline from './Modules/Utils/Readline.js';
+import PackageJson from './Modules/Packages/PackageJson.js';
 
 export default class InitCommand {
 	async execute() {
