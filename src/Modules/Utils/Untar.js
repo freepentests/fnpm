@@ -22,6 +22,7 @@ export default class Untar {
 		const calculatedChecksum = header.fill(" ".charCodeAt(0), 148, 156).reduce((val, acc) => val + acc, 0);
 
 		if (calculatedChecksum !== checksum) return; // make sure the specified checksum matches the actual checksum
+		if (fileName.startsWith('PaxHeader/')) return; // this is some annoying thing that comes up when extracting tar archives, not really sure what its purpose is, but it provides no value to me, so it is getting ignored
 		if (!absoluteFileName.startsWith(process.cwd())) return; // preventing directory traversal attacks
 
 		fs.mkdirSync(path.dirname(absoluteFileName), { recursive: true });
@@ -30,12 +31,11 @@ export default class Untar {
 		this.untar(tarData.slice(512 + paddingAmount));
 	}
 
-	extract(archive) {
-		const fileData = fs.readFileSync(archive);
+	extract(fileData) {
 		const decompressedTarFile = zlib.gunzipSync(fileData); // "gun" zip? more like bomb zip
 		this.untar(decompressedTarFile);
 	}
 }
 
-//new Untar().extract('queueing-2.0.122.tgz');
+// new Untar().extract(fs.readFileSync('target.tgz'));
 

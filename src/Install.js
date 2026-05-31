@@ -1,6 +1,10 @@
 import FlagParser from './Modules/Utils/FlagParser.js';
+import Untar from './Modules/Utils/Untar.js';
 import Readline from './Modules/Utils/Readline.js';
 import Registry from './Modules/Registry/Registry.js';
+import PackageJson from './Modules/Packages/PackageJson.js';
+
+import fs from 'fs';
 
 export default class InstallCommand {
 	#getVersionNumberFromSemverString(semverString) {
@@ -39,12 +43,49 @@ Version: ${packageVersion}\n`);
 		return trackedDependencies;
 	}
 
+	async #fetchTarball(tarballUrl) {
+		const resp = await fetch(tarballUrl);
+		const buffer = await resp.arrayBuffer();
+
+		return buffer;
+	}
+
+	async #installIndividualDependency(dependencyName, dependencyVersion) {
+		const packageInfo = await new Registry().packageInfo(dependencyName, dependencyVersion);
+		console.log(dependencyName, dependencyVersion);
+		const tarballUrl = packageInfo.dist.tarball;
+
+		const tarball = await this.#fetchTarball(tarballUrl);
+		new Untar().extract(tarball);
+		fs.renameSync('package', `./node_modules/${dependencyName}`); // package will be the name of the extracted package
+	}
+
+	async #installDependencies(dependencyVersions) {
+		try {
+			fs.accessSync('node_modules');
+		} catch(e) {
+			fs.mkdirSync('node_modules'); // make node modules dir if it doesn't already exist
+		}
+
+		for (const dependencyName of Object.keys(dependencyVersions)) {
+			const dependencyVersion = dependencyVersions[dependencyName];
+			console.log(dependencyName);
+			console.log(dependencyVersion);
+			console.log(dependencyVersions);
+			await this.#installIndividualDependency(dependencyName, dependencyVersion);
+		}
+	}
+
 	async #installPackage(packageName, packageVersion) {
 		const packageInfo = await new Registry().packageInfo(packageName, packageVersion);
 
 		await this.#askForConfirmation(packageInfo, packageVersion);
 		console.log('Fetching Dependency List...');
 		const dependencies = await this.#fetchDependentList(packageName, packageVersion);
+		console.log('Successfully fetched dependents; proceeding to installation.');
+		await this.#installDependencies(dependencies);
+
+		new PackageJson().addDependency(packageName, packageVersion);
 	}
 
 	async execute() {
