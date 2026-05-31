@@ -5,6 +5,7 @@ import InitCommand from './Init.js';
 import InstallCommand from './Install.js';
 import RunCommand from './Run.js';
 import SearchCommand from './Search.js';
+import ConfigCommand from './Config.js';
 
 const main = () => {
 	const args = new FlagParser().parse(process.argv);
@@ -13,6 +14,10 @@ const main = () => {
 	switch (command) {
 		case 'init':
 			new InitCommand().execute();
+			break;
+
+		case 'config':
+			new ConfigCommand().execute();
 			break;
 
 		case 'run':
