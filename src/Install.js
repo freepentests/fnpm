@@ -117,5 +117,3 @@ Version: ${packageVersion}\n`);
 	}
 }
 
-new InstallCommand().execute();
-

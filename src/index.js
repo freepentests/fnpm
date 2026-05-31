@@ -1,3 +1,5 @@
+#!/bin/node
+
 import FlagParser from './Modules/Utils/FlagParser.js';
 import InitCommand from './Init.js';
 import InstallCommand from './Install.js';
@@ -8,7 +10,7 @@ const main = () => {
 	const command = args.args[2];
 
 	switch (command) {
-		case 'init:
+		case 'init':
 			new InitCommand().execute();
 			break;
 

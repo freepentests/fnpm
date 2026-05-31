@@ -21,5 +21,3 @@ Downloads (monthly, weekly): ${result.downloads.monthly}, ${result.downloads.wee
 	}
 }
 
-new SearchCommand().execute();
-
