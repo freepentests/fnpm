@@ -1,4 +1,4 @@
-export default class PackageJsonBugBuilder {
+export default class PackageJsonPersonBuilder {
 	constructor() {
 		this.name;
 		this.email;

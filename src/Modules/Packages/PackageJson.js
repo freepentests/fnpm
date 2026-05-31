@@ -127,7 +127,7 @@ export default class PackageJson {
 		return this;
 	}
 
-	setMan(browser) {
+	setMan(man) {
 		this.modifyPackageJson((packageJsonContents) => {
 			packageJsonContents.man = man;
 		});
@@ -217,7 +217,7 @@ export default class PackageJson {
 		this.modifyPackageJson((packageJsonContents) => {
 			if (!packageJsonContents.files) packageJsonContents.files = [];
 
-			packageJsonContents.keywords.push(file)
+			packageJsonContents.files.push(file)
 		});
 
 		return this;
