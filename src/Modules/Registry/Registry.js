@@ -35,6 +35,7 @@ export default class Registry {
 	}
 }
 
-// console.log((await new Registry().search('webpack')).objects[0].package.description);
-console.log(await new Registry().packageInfo('webpack', '1.0.0'))
+// console.log(await new Registry().search('webpack'));
+// console.log(await new Registry().packageInfo('webpack'));
+// console.log(await new Registry().packageInfo('webpack', '1.0.0'));
 
